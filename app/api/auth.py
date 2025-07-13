@@ -1,17 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, Header
 from sqlalchemy.orm import Session
 from jose import JWTError
-
 from app.core.db import get_db
 from app.models.user import User
 from app.schemas.users import LoginUser, RegisterUser
 from app.utils.auth_utils import create_access_token, verify_token
 
 auth_api = APIRouter()
-
-@auth_api.get("/auth")
-def auth():
-    return {"message": "Hello, World!"}
 
 @auth_api.post("/register")
 def register(request: RegisterUser,db: Session = Depends(get_db)):
@@ -28,7 +23,7 @@ def login(request: LoginUser,db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == request.email).first()
     if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
-    if user.password != request.password:
+    if str(user.password) != str(request.password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
     access_token = create_access_token({"sub": str(user.id)})
@@ -68,6 +63,8 @@ def me(authorization: str = Header(None), db: Session = Depends(get_db)):
         }
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid credentials")
+
+
 
 
 

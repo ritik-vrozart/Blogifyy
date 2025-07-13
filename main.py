@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from app.api.task import task_api
 from app.api.test_api import test_api
 from app.core.db import Base, engine
 from app.models import user  # Import all your models
@@ -14,6 +15,7 @@ print("All tables created!")
 
 app.include_router(test_api, prefix="/api", tags=["test"])
 app.include_router(auth_api, prefix="/api/auth", tags=["auth"])
+app.include_router(task_api, prefix="/api/task", tags=["task"])
 
 @app.get("/")
 def read_root():
